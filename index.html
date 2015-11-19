@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Project 5</title>
+  <link href="css/style.css" rel="stylesheet">
+  <link href="css/bootstrap.css" rel="stylesheet">
+  <script src="js/lib/jquery-2.1.4.js"></script>
+  <script src="js/lib/bootstrap.js"></script>
+  <script src="js/lib/knockout-3.2.0.js"></script>
+  <script type="text/javascript" src="http://maps.googleapis.com/maps/api/js?libraries=places"></script>
+  <script src="js/googleMap.js"></script>
+</head>
+<body>
+  <div class="container">
+
+    <header class="row">
+      <div class="col-sm-3">
+        <h2>Park Locations</h2>
+      </div>
+      <div class="col-sm-9">
+        <h2>Map of Park Locations</h2>
+      </div>
+    </header>
+
+    <section class="row">
+      <div class="col-sm-3">
+        <section class="row">
+          <div class="col-sm-12">
+            <input id="filter">  Filter
+          </div>
+        </section>
+        <section class="row">
+          <div class="col-sm-12">
+            <ul id="locList" data-bind="foreach: locList">
+              <li data-bind="text: $data.name"></li>
+            </ul>
+          </div>
+        </section>
+      </div>
+      <div class="col-sm-9">
+        <div id="map"> 
+        </div>
+      </div>
+    </div>
+
+  </div>
+  <script src="js/app.js"></script>
+</body>
+</html>
