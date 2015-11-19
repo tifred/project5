@@ -48,7 +48,7 @@ var ViewModel = function() {
     console.log("from addToMap" + request);
     // Actually searches the Google Maps API for location data and runs the callback
     // function with the search results after each search.
-    service.textSearch(request, callback);
+    window.service.textSearch(request, callback);
   };
 
   initialLocations.forEach(function(locItem) {
