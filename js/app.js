@@ -45,7 +45,7 @@ var ViewModel = function() {
     var request = {
       query: '' + name + ', ' + state + ''
     };
-    console.log(request);
+    console.log("from addToMap" + request);
     // Actually searches the Google Maps API for location data and runs the callback
     // function with the search results after each search.
     service.textSearch(request, callback);
@@ -56,16 +56,16 @@ var ViewModel = function() {
     self.addToMap(locItem.name, locItem.state);
   });
 
-// Sets the boundaries of the map based on pin locations
-window.mapBounds = new google.maps.LatLngBounds();
+  // Sets the boundaries of the map based on pin locations
+  window.mapBounds = new google.maps.LatLngBounds();
 
 
-// Vanilla JS way to listen for resizing of the window
-// and adjust map bounds
-window.addEventListener('resize', function(e) {
-  //Make sure the map bounds get updated on page resize
-  map.fitBounds(mapBounds);
-});
+  // Vanilla JS way to listen for resizing of the window
+  // and adjust map bounds
+  window.addEventListener('resize', function(e) {
+    //Make sure the map bounds get updated on page resize
+    map.fitBounds(mapBounds);
+  });
 
 
 
