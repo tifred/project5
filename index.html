@@ -4,7 +4,14 @@
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="-1">
   <title>Project 5</title>
+  <script src="js/lib/jquery-2.1.4.js"></script>
+  <script src="js/googleMap.js"></script>
+  <script src="js/lib/bootstrap.js"></script>
+  <script src="js/lib/knockout-3.2.0.js"></script>
+  <script type="text/javascript" src="http://maps.googleapis.com/maps/api/js?libraries=places"></script>
   <link href="css/style.css" rel="stylesheet">
   <link href="css/bootstrap.css" rel="stylesheet">
 </head>
@@ -24,29 +31,30 @@
       <div class="col-sm-3">
         <section class="row">
           <div class="col-sm-12">
-            <input id="filter">  Filter
+            <form id="filter-form" data-bind="submit: filterList" autocomplete="off">
+              <input id="filter-input-prompt" type="text" data-bind="attr: { value: prompt}, click: edit" autocomplete="off">
+              <input id="filter-input-submit" type="submit" value="Filter">
+            </form>
+            <form id="clear-filter-form" data-bind="submit: reset">
+              <input id="clear-filter-input-submit" type="submit" value="Reset">
+            </form>
           </div>
         </section>
         <section class="row">
           <div class="col-sm-12">
             <ul id="locList" data-bind="foreach: locList">
-              <li data-bind="text: $data.name"></li>
+              <li data-bind="text: $data.name, visible: $data.visible, click: $parent.bounceMarker"></li>
             </ul>
           </div>
         </section>
       </div>
-      <div class="col-sm-9">
+      <div id="mapDiv" class="col-sm-9">
         <div id="map"> 
         </div>
       </div>
     </div>
 
   </div>
-  <script src="js/lib/jquery-2.1.4.js"></script>
-  <script src="js/lib/bootstrap.js"></script>
-  <script src="js/lib/knockout-3.2.0.js"></script>
-  <script type="text/javascript" src="http://maps.googleapis.com/maps/api/js?libraries=places"></script>
-  <script src="js/googleMap.js"></script>
   <script src="js/app.js"></script>
 </body>
 </html>

@@ -1,27 +1,32 @@
 var initialLocations = [
   {
-     name: "Zion",
-     state: "Utah",
+     name: "Brooklyn",
+     state: "NY",
      visible: true
   },
   {
-     name: "Canyonlands",
-     state: "Utah",
+     name: "Queens",
+     state: "NY",
      visible: true
   },
   {
-     name: "Moab",
-     state: "Utah",
+     name: "Harlem",
+     state: "NY",
      visible: true
   },
   {
-     name: "Arches",
-     state: "Utah",
+     name: "Hell's Kitchen",
+     state: "NY",
      visible: true
   },
   {
-     name: "Boulder",
-     state: "Colorado",
+     name: "Washington Heights",
+     state: "NY",
+     visible: true
+  },
+  {
+     name: "Soho",
+     state: "NY",
      visible: true
   }
 ];
@@ -36,39 +41,58 @@ var ViewModel = function() {
   var self = this;
 
   this.locList = ko.observableArray([]);
+  this.editing = ko.observable(false);
+  this.prompt = ko.observable("Type Here");
 
-  initialLocations.forEach(function(locItem) {
-    self.locList.push(new Location(locItem));
-  });
+  this.buildList = function() {
+    initialLocations.forEach(function(locItem) {
+      if (locItem.visible) {
+	self.locList.push(new Location(locItem));
+      }
+    });
+  };
+  this.buildList();
 
-  this.addToMap = function(name, state) {
-    var request = {
-      query: '' + name + ', ' + state + ''
-    };
-    console.log("from addToMap" + request);
-    // Actually searches the Google Maps API for location data and runs the callback
-    // function with the search results after each search.
-    window.service.textSearch(request, callback);
+  this.buildMap = function() {
+    var mapLocations = [];
+    self.locList().forEach(function(loc) {
+      if (loc.visible()) {
+        mapLocations.push('' + loc.name() + ', ' + loc.state() + '');
+      }
+    });
+    window.addEventListener('load', initializeMap(mapLocations, false));
+  };
+  this.buildMap();
+
+  this.filterList = function(formElement) {
+    var string = $(formElement).children("input").val();
+    var str = new RegExp(string);
+    self.locList().forEach(function(loc) {
+      var place =  loc.name() + loc.state(); 
+      str.test(place) ? loc.visible(true) : loc.visible(false);
+    });
+    this.buildMap();
   };
 
-  initialLocations.forEach(function(locItem) {
-    console.log(locItem.name + locItem.state);
-    self.addToMap(locItem.name, locItem.state);
-  });
+  this.reset = function() {
+    document.getElementById("filter-form").reset();  // to clear the browser cache of input form
+    self.prompt("Type Here");
+    self.locList().forEach(function(loc) {
+      loc.visible(true);
+    });
+    this.buildMap();
+  };
 
-  // Sets the boundaries of the map based on pin locations
-  window.mapBounds = new google.maps.LatLngBounds();
+  this.edit = function() {
+    console.log("edit was run");
+    this.prompt("");
+  };
 
-
-  // Vanilla JS way to listen for resizing of the window
-  // and adjust map bounds
-  window.addEventListener('resize', function(e) {
-    //Make sure the map bounds get updated on page resize
-    map.fitBounds(mapBounds);
-  });
-
-
-
+  this.bounceMarker = function(loc) {
+    console.log(loc.name());
+    var bounceLocation = [];
+    bounceLocation.push('' + loc.name() + ', ' + loc.state() + '');
+    window.addEventListener('load', initializeMap(bounceLocation, true));
+  }; 
 };
-
 ko.applyBindings(new ViewModel());
