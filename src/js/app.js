@@ -1,7 +1,7 @@
 // The initial locations.
 // Using an object for each array element
-// allows room to easily add more criteria.
-// e.g. "restaurant", "street", "address", "phone"
+// allows room to easily add more criteria in the future..
+// e.g. "restaurant", "street", "address", "phone".
 
 var initialLocations = [
   {
@@ -49,7 +49,7 @@ var ViewModel = function() {
   var self = this;
 
   // locList is the main observable Array.
-  // It will hold all the objects built with the 
+  // It will hold all the objects built with the
   // "Location" constructor.
 
   this.locList = ko.observableArray([]);
@@ -58,7 +58,7 @@ var ViewModel = function() {
   this.showFilterError = ko.observable(false);
 
   // buildList: Build the locList from the initialLocations array.
-  // This is the initial list displayed, 
+  // This is how the initial list is displayed,
   // in which all locations are visible.
 
   this.buildList = function() {
@@ -66,13 +66,15 @@ var ViewModel = function() {
       self.locList.push(new Location(locItem));
     });
   };
-  this.buildList();
+  this.buildList();  // build it now.
 
   // buildMap: Build the map.
   // The mapLocations array contains all visible locations.
   // Calls initializeMap, which is defined in the google.Map.js file.
-  // "false" parameter means to NOT bounce the marker for each location.
-  // "true" parameter means DO bounce the marker for each location. 
+  // "false" parameter means DO NOT bounce the marker for each location.
+  // "true" parameter means DO bounce the marker for each location.
+  // (Note: this is unrelated to setting up event handlers to bounce markers.
+  // That happens in the google.Map.js file.)
   // Only run after whole window is loaded, or errors may occur.
 
   this.buildMap = function() {
@@ -84,16 +86,19 @@ var ViewModel = function() {
     });
     window.addEventListener('load', initializeMap(mapLocations, false));
   };
-  this.buildMap();
+  this.buildMap();  // build it now.
 
   // filterList: Filter list and map of locations based on user input.
   // formElement is the form element, passed in by Knockout.
   // inputString is the value the user typed in.
   // regexp is the same string, but formatted as a regular expression.
+
   // the test method will return true if a match is found given the "place".
   // based on that test,  the visible status of each location is set to true or false.
   // the list view will update automatically because of a foreach data-bind to the ul tag.
-  // finally, the map is rebuilt.
+  // Another test is done to decide whether to show an error when no matches are found.
+
+  // Finally, the map is rebuilt.
 
   this.filterList = function(formElement) {
     var inputString = $(formElement).children("input").val();
@@ -104,7 +109,7 @@ var ViewModel = function() {
       regexp.test(place) ? loc.visible(true) : loc.visible(false);
       // if any single match is found, set error message to NOT show.
       if (regexp.test(place)) {
-        self.showFilterError(false)
+        self.showFilterError(false);
       }
     });
     this.buildMap();
@@ -113,10 +118,11 @@ var ViewModel = function() {
   // Reset: Reset button to clear the filter form.
   // Sets all locations to visible.
   // Returns "prompt" to original value.
+  // Sets "showFilterError" to false so the error will not display.
 
   this.reset = function() {
     // to clear the browser cache of input form:
-    document.getElementById("filter-form").reset();  
+    document.getElementById("filter-form").reset();
     self.prompt("Type Location Here");
     this.showFilterError(false);
     self.locList().forEach(function(loc) {
@@ -125,16 +131,15 @@ var ViewModel = function() {
     this.buildMap();
   };
 
-  // Edit: Clear out the prompt text when a user clicks on the form.
+  // Edit: Clear out the prompt text when a user clicks on the input filter field.
 
   this.edit = function() {
     this.prompt("");
   };
 
   // toggleListPanel: Clicking on menu icon (which is only visible below 768px in width)
-  // Will either hide or show the entire list panel.
-  // toggleListView is data bound to the div of the entire
-  // list view panel.
+  // will either hide or show the entire list panel.
+  // toggleListView is data bound to the div of the entire list view panel.
   // I think this could be done more simply.
 
   this.toggleListPanel = function() {
@@ -145,7 +150,7 @@ var ViewModel = function() {
   // Only applies to the single, clicked-upon item.
   // The "true" parameter means initializeMap will do the right thing
   // for just this one location.  All other locations are left alone.
-  
+
   this.bounceMarker = function(loc) {
     var bounceLocation = [];
     bounceLocation.push('' + loc.name() + ', ' + loc.state() + '');

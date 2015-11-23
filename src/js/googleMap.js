@@ -8,22 +8,23 @@ The rough order in which things happen:
   "callback" does ajax query with New York Times API for extra info on each location.
   "callback" calls "createMapMarker".
   "createMapMarker" makes the marker, makes the info window.
-  "createMapMarker" sets up event listener to bounce marker on click or to bounce now.
+  "createMapMarker" sets up event listener to bounce marker on click OR starts a bounce now.
 */
 
 
 var map;                    // declares a global map variable
-var currentMarker = null;   // used to allow only one bouncing marker at once.
+var currentMarker = null;   // used to ensure only one marker bounces at a time.
 
 // initializeMap: the main function.
 // Run from ViewModel in the "app.js" file.
 // "locations" is an array with elements like: "Brooklyn, NY"
-// "bounce" is a boolean.
+// "bounce" is a boolean:
 //    true means to set one single location's marker bouncing right now.
 //    false means to set an event listener to make that happen later.
 
 // Note: if bounce was set to true when initializeMap was called,
 // then the "locations" array was also set to only have a single location in it.
+// That is the marker that will be set to bounce now.
 
 function initializeMap(locations, bounce) {
 
@@ -41,10 +42,10 @@ function initializeMap(locations, bounce) {
 
     var lat = placeData.geometry.location.lat();  // latitude from the place service
     var lon = placeData.geometry.location.lng();  // longitude from the place service
-    var name = placeData.formatted_address;   // name of the place from the place service
-    var bounds = window.mapBounds;            // current boundaries of the map window
+    var name = placeData.formatted_address;       // name of the place from the place service
+    var bounds = window.mapBounds;                // current boundaries of the map window
 
-    // marker is an object with additional data about the pin for a single location
+    // marker is an object with additional data about the pin for a single location.
     var marker = new google.maps.Marker({
       map: map,
       position: placeData.geometry.location,
@@ -56,15 +57,14 @@ function initializeMap(locations, bounce) {
     });
 
     // oneBounceOnly: a helper function.
-    // when marker is clicked, stop bouncing on any other bouncing markers
-    // if they exist.
-    // uses the currentMarker variable, which must be global.
+    // When marker is clicked, stop bouncing on any other bouncing markers.
+    // Uses the currentMarker variable, which must be global.
 
     function oneBounceOnly(marker) {
         if (currentMarker) currentMarker.setAnimation(null);
         currentMarker = marker;
         marker.setAnimation(google.maps.Animation.BOUNCE);
-    };
+    }
 
     // Here is where the boolean parameter "bounce" matters.
     // If bounce is true, open the info window and bounce the marker NOW.
@@ -83,27 +83,32 @@ function initializeMap(locations, bounce) {
       });
     }
 
-    // this is where the pin actually gets added to the map.
+    // This is where the pin actually gets added to the map.
     // bounds.extend() takes in a map location object
     bounds.extend(new google.maps.LatLng(lat, lon));
-    // fit the map to the new marker
+    // Fit the map to the new marker
     map.fitBounds(bounds);
-    // center the map
+    // Center the map
     map.setCenter(bounds.getCenter());
   }
 
   // callback: run by service.textSearch when it gets results back.
-  // Use "status" to be sure results were received.
+  // This handles data from both Google's Map API and the NYT's API.
+  // There is error handling for both.
 
+  // Use "status" to be sure results were received from Google's Map API.
   // If results don't come back, return error message to #map element.
   // You can test this by mangling "google.maps.places.PlacesServiceStatus.OK" below.
-  // insert "XYZ" anywhere in that string and the lookup will fail.
+  // Change "OK" to "XXOK" and it will fail.
 
   // If results do come back, call New York Times data API.
-  // Build string "nytinfo" of "li"s with first three most recent articles about location.
+  // Build string "nytinfo" of "li"s with the first three most recent articles about location.
   // Uses an AJAX call with a done and fail method.
   // It's important to acquire this info before running createMapMarker.
-  // That function must have all the info from the NYT, or it will have no info to display.
+  // That function must have all the info from the NYT API, or it will have no info to display.
+ 
+  // If results don't come back from NYT, display error in infoWindow.
+  // You can test this by changing "api.nytimes" to "apiXX.nytimes".
 
   // Finally, call createMapMarker with results array and nytInfo string.
 
@@ -145,7 +150,7 @@ function initializeMap(locations, bounce) {
       var request = {
         query: locations[i]
       };
-      // Go get results for the given query.
+      // Go get results for the given query from Google.
       // When the results arrive, run the callback function.
       service.textSearch(request, callback);
     }

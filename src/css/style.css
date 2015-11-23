@@ -27,6 +27,7 @@ li {
   margin-bottom: 5px;
 }
 
+/* finicky adjustment to match size of map div */
 #div-list {
   height: 681px;
   background-color: #9D94B4;
@@ -64,6 +65,8 @@ li:hover {
     height: 100%;
     background-color: #9D94B4;
   }
+
+  /* add padding so user can scroll page, not just scroll map itself */
   #mapDiv {
     padding-left: 5%;
     padding-right: 5%;
@@ -71,12 +74,14 @@ li:hover {
   }
 }
 
+/* Don't show menu icon above 768px */
 @media only screen AND (min-width: 768px) {
   .menu-icon {
     display: none;
   }
 }
 
+/* finicky adjustment to match size of map div */
 @media only screen AND (min-width: 992px) {
   #div-list {
     height: 712px;

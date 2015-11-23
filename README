@@ -1,4 +1,4 @@
-TO RUN APPLICATION:
+TO RUN AND TEST APPLICATION:
 
 1. Load page.
 
@@ -19,7 +19,7 @@ on this location).
 3. Click on a marker while another marker is already bouncing.
 
 The first marker should stop bouncing.
-Only the most recently clicked marker will bounce.
+Only the most recently clicked marker should bounce.
 
 
 4. Hover over names of locations in list.
@@ -29,19 +29,20 @@ The color of text and background should change.
 
 5. Click on name of location in list.
 
-Map zooms to that location.
-Marker bounces.
-Info Window opens.
+Map should zoom to that location.
+Marker should bounce.
+Info Window should open.
 
 
 6. Click once on Filter Input Field.
 
 The string "Type Location Here" should disappear.
+This allows the user to type in a new string.
 
 
 7. Enter text in Filter Input Field; click "Filter" button or hit return.
 
-Text is matched against locations (case sensitive, full-text search).
+Text should be matched against locations (case sensitive, full-text search).
 For instance, typing "ho" should match the location "Soho".
 Matched location (only) should appear in list.
 Matched location should be zoomed in on map.
@@ -50,20 +51,25 @@ Marker should NOT bounce.
 
 
 8. Click "Reset" button.  (Note: This is additional functionality.)
-All locations should appear in list view.
-All locations and markers should appear in map.
+All 6 locations should appear in list view.
+All 6 locations and markers should appear in map.
 
 
 9. Resize window to less than 768px in width.
 
-"Menu" icon appears in top right corner.
-Purple margin appears around map image to allow for scrolling on mobile.
+"Menu" icon should appear in top right corner.
+Purple margin should appear around map image to allow for scrolling on mobile.
+(otherwise, one could only scroll the map itself.)
 
 
-10. Click on "Menu" icon.
+10. Click on "Menu" icon (only visible below 768 px).
 
-List view, filter input field, filter button, and reset button disappear.
-Click again and they reappear.
+List view, filter input field, filter button, and reset button should disappear.
+Click again and they should reappear.
+Note: I would prefer to hide the "list view" with a media query below 768 px.
+But this did not interact well with Knockout binding.
+I researched alternatives, but didn't like any of them.
+The "toggling" method was the best compromise I could find. 
 
 
 10. Error Handling:

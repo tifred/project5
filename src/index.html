@@ -25,11 +25,14 @@
         <h3>Locations</h3>
       </div>
       <div class="col-xs-2 col-xs-offset-6">
-        <!-- click runs toggleListPanel which changes
+
+        <!-- A click runs toggleListPanel which changes
              toggleListView which hides/shows list view -->
+
         <button class="menu-icon" data-bind="click: toggleListPanel">
           <span class="glyphicon glyphicon-align-justify"></span>
         </button>
+
       </div>
     </header>
 
@@ -41,19 +44,24 @@
 
       <!-- Hide entire list view when button of
            class "menu-icon" (above) is clicked -->
+
       <div class="col-sm-3" data-bind="visible: toggleListView">
 
         <!-- FILTER FORM -->
 
         <section class="row">
           <div class="col-sm-12">
-            <!-- Show prompt text til user clicks on input. -->
+
+            <!-- Show prompt text until user clicks on input. -->
             <!-- Submit input to "filterList" -->
             <!-- Does exact matches, case sensitive, on any portion of the string -->
+            <!-- autocomplete=off needed to keep browser from caching input -->
+
             <form id="filter-form" data-bind="submit: filterList" autocomplete="off">
               <input id="filter-input-prompt" type="text" data-bind="attr: { value: prompt}, click: edit" autocomplete="off">
               <input id="filter-input-submit" type="submit" value="Filter">
             </form>
+
           </div>
         </section>
 
@@ -80,7 +88,7 @@
               <li class="text-left" data-bind="text: $data.name, visible: $data.visible, click: $parent.bounceMarker"></li>
             </ul>
 
-            <!-- Show an error message if no matches were found -->
+            <!-- Show an error message if and only if no matches were found -->
 
             <p class="text-left" data-bind="visible: showFilterError">No locations have that name.  Use the Reset button and try again.</p>
           </div>
