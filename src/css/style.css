@@ -1,0 +1,84 @@
+.header-row {
+  background-color: #9D94B4;
+}
+
+h3,
+.menu-icon {
+  font-family: Lato, sans-serif; font-weight: 500;
+  margin-top: 10px;
+}
+
+input,
+li {
+  font-family: Lato, sans-serif; font-weight: 400;
+}
+
+#filter-input-submit,
+#filter-input-prompt {
+  margin-top: 5px;
+}
+
+#filter-input-submit,
+#clear-filter-input-submit {
+  background-color: #F2F847;
+}
+
+#clear-filter-input-submit {
+  margin-bottom: 5px;
+}
+
+#div-list {
+  height: 696px;
+  background-color: #9D94B4;
+}
+
+ul {
+  list-style-type: none;
+  padding-left: 5px;
+}
+
+li,
+form {
+  padding-bottom: 5px;
+  padding-top: 5px;
+}
+
+li:hover {
+  background-color: yellow;
+  color: blue;
+}
+
+#mapDiv {
+  height: 800px;
+  padding: 0;
+}
+
+#map {
+  display: block;
+  height: 100%;
+  margin: 0 0;
+}
+
+@media only screen AND (max-width: 768px) {
+  #div-list {
+    height: 100%;
+    background-color: #9D94B4;
+  }
+  #mapDiv {
+    padding-left: 5%;
+    padding-right: 5%;
+    background-color: #9D94B4;
+  }
+}
+
+@media only screen AND (min-width: 768px) {
+  .menu-icon {
+    display: none;
+  }
+}
+
+@media only screen AND (min-width: 992px) {
+  #div-list {
+    height: 722px;
+  }
+}
