@@ -55,6 +55,7 @@ var ViewModel = function() {
   this.locList = ko.observableArray([]);
   this.prompt = ko.observable("Type Location Here");
   this.toggleListView = ko.observable(true);
+  this.showFilterError = ko.observable(false);
 
   // buildList: Build the locList from the initialLocations array.
   // This is the initial list displayed, 
@@ -97,9 +98,14 @@ var ViewModel = function() {
   this.filterList = function(formElement) {
     var inputString = $(formElement).children("input").val();
     var regexp = new RegExp(inputString);
+    this.showFilterError(true); // set error message to show unless a match is found.
     self.locList().forEach(function(loc) {
       var place =  loc.name() + loc.state();
       regexp.test(place) ? loc.visible(true) : loc.visible(false);
+      // if any single match is found, set error message to NOT show.
+      if (regexp.test(place)) {
+        self.showFilterError(false)
+      }
     });
     this.buildMap();
   };
@@ -112,6 +118,7 @@ var ViewModel = function() {
     // to clear the browser cache of input form:
     document.getElementById("filter-form").reset();  
     self.prompt("Type Location Here");
+    this.showFilterError(false);
     self.locList().forEach(function(loc) {
       loc.visible(true);
     });

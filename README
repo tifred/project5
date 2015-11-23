@@ -1,1 +1,73 @@
-Project 5.
+TO RUN APPLICATION:
+
+1. Load page.
+
+List of 6 locations should appear in list.
+Map of 6 locations with 6 markers should appear.
+Filter input field should read "Type Location Here".
+
+
+2. Click on any marker on map.
+
+Marker should bounce.
+Info Window should open.
+Info Window should include three URL links and text from
+the New York Times's data API (the three most recent articles
+on this location).
+
+
+3. Click on a marker while another marker is already bouncing.
+
+The first marker should stop bouncing.
+Only the most recently clicked marker will bounce.
+
+
+4. Hover over names of locations in list.
+
+The color of text and background should change.
+
+
+5. Click on name of location in list.
+
+Map zooms to that location.
+Marker bounces.
+Info Window opens.
+
+
+6. Click once on Filter Input Field.
+
+The string "Type Location Here" should disappear.
+
+
+7. Enter text in Filter Input Field; click "Filter" button or hit return.
+
+Text is matched against locations (case sensitive, full-text search).
+For instance, typing "ho" should match the location "Soho".
+Matched location (only) should appear in list.
+Matched location should be zoomed in on map.
+InfoWindow should NOT open.
+Marker should NOT bounce.
+
+
+8. Click "Reset" button.  (Note: This is additional functionality.)
+All locations should appear in list view.
+All locations and markers should appear in map.
+
+
+9. Resize window to less than 768px in width.
+
+"Menu" icon appears in top right corner.
+Purple margin appears around map image to allow for scrolling on mobile.
+
+
+10. Click on "Menu" icon.
+
+List view, filter input field, filter button, and reset button disappear.
+Click again and they reappear.
+
+
+10. Error Handling:
+
+If the New York Times API doesn't respond, the InfoWindow displays an error.
+If Google Map API doesn't respond, the map element displays an error.
+If the submit on Input Filter Field has no matches, the list view shows an error.

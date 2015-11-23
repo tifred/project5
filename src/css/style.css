@@ -28,7 +28,7 @@ li {
 }
 
 #div-list {
-  height: 696px;
+  height: 681px;
   background-color: #9D94B4;
 }
 
@@ -79,6 +79,6 @@ li:hover {
 
 @media only screen AND (min-width: 992px) {
   #div-list {
-    height: 722px;
+    height: 712px;
   }
 }

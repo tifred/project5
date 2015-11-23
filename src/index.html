@@ -71,12 +71,18 @@
 
         <section class="row">
           <div id="div-list" class="col-sm-12">
+
             <!-- Populate ul using data from locList
                  but only if item is marked as visible.
                  Also set up a click event to bounce marker on map. -->
+
             <ul class="text-left" data-bind="foreach: locList">
               <li class="text-left" data-bind="text: $data.name, visible: $data.visible, click: $parent.bounceMarker"></li>
             </ul>
+
+            <!-- Show an error message if no matches were found -->
+
+            <p class="text-left" data-bind="visible: showFilterError">No locations have that name.  Use the Reset button and try again.</p>
           </div>
         </section>
 
