@@ -102,7 +102,7 @@ var ViewModel = function() {
 
   this.filterList = function(formElement) {
     var inputString = $(formElement).children("input").val();
-    var regexp = new RegExp(inputString);
+    var regexp = new RegExp(inputString, 'i');
     this.showFilterError(true); // set error message to show unless a match is found.
     self.locList().forEach(function(loc) {
       var place =  loc.name() + loc.state();
@@ -157,4 +157,7 @@ var ViewModel = function() {
     window.addEventListener('load', initializeMap(bounceLocation, true));
   };
 };
-ko.applyBindings(new ViewModel());
+// The line below will be run from the googleSuccess function
+// in the "googleCallback.js" file.
+// Don't want to build model until we know google maps could be reached.
+// ko.applyBindings(new ViewModel());

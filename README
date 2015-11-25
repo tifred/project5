@@ -42,7 +42,7 @@ This allows the user to type in a new string.
 
 7. Enter text in Filter Input Field; click "Filter" button or hit return.
 
-Text should be matched against locations (case sensitive, full-text search).
+Text should be matched against locations (case insensitive, full-text search).
 For instance, typing "ho" should match the location "Soho".
 Matched location (only) should appear in list.
 Matched location should be zoomed in on map.
@@ -69,11 +69,12 @@ Click again and they should reappear.
 Note: I would prefer to hide the "list view" with a media query below 768 px.
 But this did not interact well with Knockout binding.
 I researched alternatives, but didn't like any of them.
-The "toggling" method was the best compromise I could find. 
+The "toggling" method was the best compromise I could find.
 
 
 10. Error Handling:
 
+If the Google places library can't be reached, an alert window displays in browser.
 If the New York Times API doesn't respond, the InfoWindow displays an error.
-If Google Map API doesn't respond, the map element displays an error.
+If Google's service.textSearch doesn't respond, the map element displays an error.
 If the submit on Input Filter Field has no matches, the list view shows an error.

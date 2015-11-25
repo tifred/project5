@@ -106,7 +106,7 @@ function initializeMap(locations, bounce) {
   // Uses an AJAX call with a done and fail method.
   // It's important to acquire this info before running createMapMarker.
   // That function must have all the info from the NYT API, or it will have no info to display.
- 
+
   // If results don't come back from NYT, display error in infoWindow.
   // You can test this by changing "api.nytimes" to "apiXX.nytimes".
 

@@ -8,10 +8,13 @@
   <script src="js/lib/jquery-2.1.4.js"></script>
   <script src="js/googleMap.js"></script>
   <script src="js/lib/knockout-3.2.0.js"></script>
-  <script type="text/javascript" src="http://maps.googleapis.com/maps/api/js?libraries=places"></script>
   <link href="css/bootstrap.css" rel="stylesheet">
   <link href="css/style.css" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css?family=Lato:500,400" rel="stylesheet">
+  <script src="js/app.js"></script>
+  <!-- googleCallback.js contains success and error functions. -->
+  <script src="js/googleCallback.js"></script>
+  <script async type="text/javascript" src="http://maps.googleapis.com/maps/api/js?libraries=places&amp;callback=googleSuccess" onerror="googleError()"></script>
 </head>
 <body>
   <!-- CONTAINER-->
@@ -54,7 +57,7 @@
 
             <!-- Show prompt text until user clicks on input. -->
             <!-- Submit input to "filterList" -->
-            <!-- Does exact matches, case sensitive, on any portion of the string -->
+            <!-- Does exact matches, case insensitive, on any portion of the string -->
             <!-- autocomplete=off needed to keep browser from caching input -->
 
             <form id="filter-form" data-bind="submit: filterList" autocomplete="off">
@@ -106,8 +109,6 @@
     </main> <!-- END MAIN -->
 
   </div> <!-- END CONTAINER -->
-
-  <script src="js/app.js"></script>
 
 </body>
 </html>
