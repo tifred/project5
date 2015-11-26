@@ -56,12 +56,17 @@
           <div class="col-sm-12">
 
             <!-- Show prompt text until user clicks on input. -->
+
             <!-- Submit input to "filterList" -->
             <!-- Does exact matches, case insensitive, on any portion of the string -->
             <!-- autocomplete=off needed to keep browser from caching input -->
 
+            <!-- "RealTime" filtering also happens with each keyboard input. -->
+            <!--  a "textInput" binding on the input field makes this happen -->
+            <!--  it makes the Filter submit button redundant -->
+
             <form id="filter-form" data-bind="submit: filterList" autocomplete="off">
-              <input id="filter-input-prompt" type="text" data-bind="attr: { value: prompt}, click: edit" autocomplete="off">
+              <input id="filter-input-prompt" type="text" data-bind="attr: { value: prompt}, click: edit, textInput: searchInputValue, event: {keyup: filterListRealTime}" autocomplete="off">
               <input id="filter-input-submit" type="submit" value="Filter">
             </form>
 

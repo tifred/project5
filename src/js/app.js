@@ -56,6 +56,7 @@ var ViewModel = function() {
   this.prompt = ko.observable("Type Location Here");
   this.toggleListView = ko.observable(true);
   this.showFilterError = ko.observable(false);
+  this.searchInputValue = ko.observable("");
 
   // buildList: Build the locList from the initialLocations array.
   // This is how the initial list is displayed,
@@ -93,16 +94,29 @@ var ViewModel = function() {
   // inputString is the value the user typed in.
   // regexp is the same string, but formatted as a regular expression.
 
+  this.filterList = function(formElement) {
+    var inputString = $(formElement).children("input").val();
+    var regexp = new RegExp(inputString, 'i');
+    this.updateAfterFilter(regexp);
+  };
+
+  // filterListRealTime: Filter list and map of locations based on user input.
+  // but do it with every character typed, as it is typed.
+  // the observable "searchInputvalue" is updated via a 'textInput" binding.
+
+  this.filterListRealTime = function() {
+    var regexp = new RegExp(this.searchInputValue(), 'i');
+    this.updateAfterFilter(regexp);
+  };
+
+  // updateAfterFilter: helper method used by both filter methods.
   // the test method will return true if a match is found given the "place".
   // based on that test,  the visible status of each location is set to true or false.
   // the list view will update automatically because of a foreach data-bind to the ul tag.
   // Another test is done to decide whether to show an error when no matches are found.
-
   // Finally, the map is rebuilt.
 
-  this.filterList = function(formElement) {
-    var inputString = $(formElement).children("input").val();
-    var regexp = new RegExp(inputString, 'i');
+  this.updateAfterFilter = function(regexp) {
     this.showFilterError(true); // set error message to show unless a match is found.
     self.locList().forEach(function(loc) {
       var place =  loc.name() + loc.state();

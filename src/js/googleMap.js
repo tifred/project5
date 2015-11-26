@@ -14,6 +14,7 @@ The rough order in which things happen:
 
 var map;                    // declares a global map variable
 var currentMarker = null;   // used to ensure only one marker bounces at a time.
+var currentInfoWindow = null; // used to ensure only one infoWindow is open at once.
 
 // initializeMap: the main function.
 // Run from ViewModel in the "app.js" file.
@@ -61,9 +62,19 @@ function initializeMap(locations, bounce) {
     // Uses the currentMarker variable, which must be global.
 
     function oneBounceOnly(marker) {
-        if (currentMarker) currentMarker.setAnimation(null);
-        currentMarker = marker;
-        marker.setAnimation(google.maps.Animation.BOUNCE);
+      if (currentMarker) currentMarker.setAnimation(null);
+      currentMarker = marker;
+      marker.setAnimation(google.maps.Animation.BOUNCE);
+    }
+
+    // oneInfoWindowOnly: a helper function.
+    // When marker is clicked, close the infoWindow open already.
+    // Uses the currentInfoWindow variable, which must be global.
+
+    function oneInfoWindowOnly(map, marker, infoWindow) {
+      if (currentInfoWindow) currentInfoWindow.close();
+      currentInfoWindow = infoWindow;
+      infoWindow.open(map, marker);
     }
 
     // Here is where the boolean parameter "bounce" matters.
@@ -74,11 +85,11 @@ function initializeMap(locations, bounce) {
     // and bounce the marker when there is a click LATER.
 
     if (bounce) {
-        infoWindow.open(map, marker);
+        oneInfoWindowOnly(map, marker, infoWindow);
         oneBounceOnly(marker);
     } else {
       google.maps.event.addListener(marker, 'click', function() {
-        infoWindow.open(map, marker);
+        oneInfoWindowOnly(map, marker, infoWindow);
         oneBounceOnly(marker);
       });
     }
