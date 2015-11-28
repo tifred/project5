@@ -12,25 +12,30 @@ The rough order in which things happen:
 */
 
 
-var map;                    // declares a global map variable
-var currentMarker = null;   // used to ensure only one marker bounces at a time.
+var map;                      // declares a global map variable
+var currentMarker = null;     // used to ensure only one marker bounces at a time.
 var currentInfoWindow = null; // used to ensure only one infoWindow is open at once.
 
-// initializeMap: the main function.
-// Run from ViewModel in the "app.js" file.
-// "locations" is an array with elements like: "Brooklyn, NY"
-// "bounce" is a boolean:
-//    true means to set one single location's marker bouncing right now.
-//    false means to set an event listener to make that happen later.
+/*
+   initializeMap: the main function.
+   Run from ViewModel in the "app.js" file.
+   "locations" is an array with elements like: "Brooklyn, NY"
+   "bounce" is a boolean:
+      true means to set one single location's marker bouncing right now.
+      false means to set an event listener to make that happen later.
 
-// Note: if bounce was set to true when initializeMap was called,
-// then the "locations" array was also set to only have a single location in it.
-// That is the marker that will be set to bounce now.
+   Note: if bounce was set to true when initializeMap was called,
+   then the "locations" array was also set to only have a single location in it.
+   That is the marker that will be set to bounce now.
+*/
 
 function initializeMap(locations, bounce) {
 
   // Empty now, but may be useful in future.
   var mapOptions = {};
+
+  // Determine number of locations to display.
+  var markerCount = locations.length;
 
   // build instance of map from Google's constructor.
   // the final map image will be part of the "#map" element in the HTML.
@@ -57,19 +62,26 @@ function initializeMap(locations, bounce) {
       content: nytInfo
     });
 
-    // oneBounceOnly: a helper function.
-    // When marker is clicked, stop bouncing on any other bouncing markers.
-    // Uses the currentMarker variable, which must be global.
+    /*
+       oneBounceOnly: a helper function.
+       When marker is clicked, stop bouncing on any other bouncing markers.
+       Uses the currentMarker variable, which must be global.
+    */
 
     function oneBounceOnly(marker) {
       if (currentMarker) currentMarker.setAnimation(null);
       currentMarker = marker;
       marker.setAnimation(google.maps.Animation.BOUNCE);
+      setTimeout(function() {
+        marker.setAnimation(null);
+      }, 3000);
     }
 
-    // oneInfoWindowOnly: a helper function.
-    // When marker is clicked, close the infoWindow open already.
-    // Uses the currentInfoWindow variable, which must be global.
+    /*
+       oneInfoWindowOnly: a helper function.
+       When marker is clicked, close the infoWindow open already.
+       Uses the currentInfoWindow variable, which must be global.
+    */
 
     function oneInfoWindowOnly(map, marker, infoWindow) {
       if (currentInfoWindow) currentInfoWindow.close();
@@ -77,51 +89,74 @@ function initializeMap(locations, bounce) {
       infoWindow.open(map, marker);
     }
 
-    // Here is where the boolean parameter "bounce" matters.
-    // If bounce is true, open the info window and bounce the marker NOW.
-    // There will only be one location in the locations array.
+    /*
+       Here is where the boolean parameter "bounce" matters.
+       If bounce is true, open the info window and bounce the marker NOW.
+       There will only be one location in the locations array.
 
-    // Otherwise, set up an event listener to open the info window
-    // and bounce the marker when there is a click LATER.
+       Otherwise, set up an event listener to open the info window
+       and bounce the marker when there is a click LATER.
+       The zoom will be set to accomodate all the markers.
+    */
+
 
     if (bounce) {
         oneInfoWindowOnly(map, marker, infoWindow);
         oneBounceOnly(marker);
     } else {
-      google.maps.event.addListener(marker, 'click', function() {
-        oneInfoWindowOnly(map, marker, infoWindow);
-        oneBounceOnly(marker);
-      });
+	google.maps.event.addListener(marker, 'click', function() {
+	  oneInfoWindowOnly(map, marker, infoWindow);
+	  oneBounceOnly(marker);
+	});
     }
 
-    // This is where the pin actually gets added to the map.
-    // bounds.extend() takes in a map location object
+    /*
+       This is where the pin actually gets added to the map.
+       bounds.extend() takes in a map location object
+    */
     bounds.extend(new google.maps.LatLng(lat, lon));
-    // Fit the map to the new marker
-    map.fitBounds(bounds);
-    // Center the map
-    map.setCenter(bounds.getCenter());
+
+    /*
+       If there is more than one marker, use the default zooming.
+       If there is just one marker, which happens when clicking
+       on the list of locations or filtering on them, 
+       set zoom to 15.
+    */
+
+    if (markerCount > 1) {
+      // Fit the map to the new marker
+      map.fitBounds(bounds);
+      // Center the map
+      map.setCenter(bounds.getCenter());
+    }
+    else if (markerCount === 1) {
+      // Center the map and set zoom level.
+      map.setCenter(bounds.getCenter());
+      map.setZoom(15);
+    }
   }
 
-  // callback: run by service.textSearch when it gets results back.
-  // This handles data from both Google's Map API and the NYT's API.
-  // There is error handling for both.
+  /*
+     callback: run by service.textSearch when it gets results back.
+     This handles data from both Google's Map API and the NYT's API.
+     There is error handling for both.
 
-  // Use "status" to be sure results were received from Google's Map API.
-  // If results don't come back, return error message to #map element.
-  // You can test this by mangling "google.maps.places.PlacesServiceStatus.OK" below.
-  // Change "OK" to "XXOK" and it will fail.
+     Use "status" to be sure results were received from Google's Map API.
+     If results don't come back, return error message to #map element.
+     You can test this by mangling "google.maps.places.PlacesServiceStatus.OK" below.
+     Change "OK" to "XXOK" and it will fail.
 
-  // If results do come back, call New York Times data API.
-  // Build string "nytinfo" of "li"s with the first three most recent articles about location.
-  // Uses an AJAX call with a done and fail method.
-  // It's important to acquire this info before running createMapMarker.
-  // That function must have all the info from the NYT API, or it will have no info to display.
+     If results do come back, call New York Times data API.
+     Build string "nytinfo" of "li"s with the first three most recent articles about location.
+     Uses an AJAX call with a done and fail method.
+     It's important to acquire this info before running createMapMarker.
+     That function must have all the info from the NYT API, or it will have no info to display.
 
-  // If results don't come back from NYT, display error in infoWindow.
-  // You can test this by changing "api.nytimes" to "apiXX.nytimes".
+     If results don't come back from NYT, display error in infoWindow.
+     You can test this by changing "api.nytimes" to "apiXX.nytimes".
 
-  // Finally, call createMapMarker with results array and nytInfo string.
+     Finally, call createMapMarker with results array and nytInfo string.
+  */
 
   function callback(results, status) {
     if (status == google.maps.places.PlacesServiceStatus.OK) {
@@ -132,7 +167,7 @@ function initializeMap(locations, bounce) {
            var items = [];
            items.push("<ul>");
            for (var i = 0; i < 3; i++ ) {
-             items.push( "<li class='article'> <a href='" + data.response.docs[i].web_url + "'> " + data.response.docs[i].headline.main + "</a> <p>" + data.response.docs[i].snippet + "</p> </li>");
+             items.push( "<li class='article'> <a href='" + data.response.docs[i].web_url + "' target='_blank'> " + data.response.docs[i].headline.main + "</a> <p>" + data.response.docs[i].snippet + "</p> </li>");
            }
            items.push("</ul>");
            var nytInfo = items.join("");
@@ -152,17 +187,21 @@ function initializeMap(locations, bounce) {
 
     var service = new google.maps.places.PlacesService(map);
 
-    // Iterate through the array of locations.
-    // Create a search object for each location.
-    // The callback will then go on to call createMapMarker.
+    /*
+       Iterate through the array of locations.
+       Create a search object for each location.
+       The callback will then go on to call createMapMarker.
+    */
 
     for (var i = 0; i < locations.length; i++) {
       // The search request object:
       var request = {
         query: locations[i]
       };
-      // Go get results for the given query from Google.
-      // When the results arrive, run the callback function.
+      /*
+	 Go get results for the given query from Google.
+	 When the results arrive, run the callback function.
+      */
       service.textSearch(request, callback);
     }
   }
@@ -171,7 +210,6 @@ function initializeMap(locations, bounce) {
   window.mapBounds = new google.maps.LatLngBounds();
 
   // pinPoster(locations) creates pins on the map for each location.
-  // This is the real start of the function.
   pinPoster(locations);
 }
 
