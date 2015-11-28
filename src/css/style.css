@@ -61,10 +61,6 @@ li:hover {
 }
 
 @media only screen AND (max-width: 768px) {
-  #div-list {
-    height: 100%;
-    background-color: #9D94B4;
-  }
 
   /* add padding so user can scroll page, not just scroll map itself */
   #mapDiv {
@@ -78,6 +74,15 @@ li:hover {
 @media only screen AND (min-width: 768px) {
   .menu-icon {
     display: none;
+  }
+
+  #mapDiv {
+    position: relative;
+    min-height: 1px;
+    padding-left: 15px;
+    padding-right: 15px;
+    float: left;
+    width: 75%;
   }
 }
 

@@ -53,13 +53,11 @@
            class "menu-icon" (above) is clicked.
            Accomplished by adding/removing the "hidden-xs" class.
 
-           The class "col-sm-3" will be applied at all times.
+           The class "col-xs-3" will be applied at all times.
 
            Note that the other column in this row is the map, which 
-           uses col-sm-9.  Therefore, above 768 px, the two elements
-           are side by side, using up 25% and 75% of the screen.
-           Below 768px, the map will be underneath the list panel, 
-           assuming it has been toggled to be visible. -->
+           uses col-xs-9 by default. If the menu icon is toggled, the map
+           uses col-xs-12.  -->
 
       <div data-bind="attr: { class: listViewClasses}">
 
@@ -118,8 +116,14 @@
       </div> <!-- END LIST VIEW PANEL -->
 
       <!-- MAP -->
+      
+      <!-- The mapDiv is at col-xs-9 by default.
+           Clicking menu icon switches it to col-xs-12.
+           Clicking it again toggles it back to col-xs-9.
+           A media query handles a special case (see notes
+           in app.js on mapViewClasses). -->
 
-      <div id="mapDiv" class="col-sm-9">
+      <div id="mapDiv" data-bind="attr: { class: mapViewClasses}">
         <div id="map">
         </div>
       </div> <!-- END MAP -->

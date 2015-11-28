@@ -63,7 +63,8 @@ var ViewModel = function() {
   this.toggleListView = ko.observable(false);
   this.showFilterError = ko.observable(false);
   this.searchInputValue = ko.observable("");
-  this.listViewClasses = ko.observable("col-sm-3 hidden-xs");
+  this.listViewClasses = ko.observable("col-xs-3");
+  this.mapViewClasses = ko.observable("col-xs-9");
 
   /* 
      buildList: Build the locList from the initialLocations array.
@@ -176,15 +177,27 @@ var ViewModel = function() {
   /*
      toggleListPanel: Clicking on menu icon (only visible below 768px in width)
      will either hide or show the entire list panel.
+     the map element will expand or shrink to fill the width.
      toggleListView is data bound to the div of the entire list view panel.
+     and to the map element.
+
+     Note: one tricky case is where the view starts below 768,
+     then the menu bar is used to make the map full width, then the view is expanded again.
+     You can't do that on mobile, but you can on a desktop.
+     With the rules below, the map element will expand to 100% in width
+     and stay that way when the width increases above 768.  That's not right.
+     A media query in the css handles this event, setting the size back to 75% if
+     the viewport gets larger.
   */
 
   this.toggleListPanel = function() {
     this.toggleListView(!this.toggleListView());
     if (this.toggleListView()) {
-      this.listViewClasses("col-sm-3");
+      this.listViewClasses("col-xs-3 hidden-xs");
+      this.mapViewClasses("col-xs-12");
     } else {
-      this.listViewClasses("col-sm-3 hidden-xs");
+      this.listViewClasses("col-xs-3");
+      this.mapViewClasses("col-xs-9");
     }
   };
 
