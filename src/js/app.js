@@ -54,9 +54,10 @@ var ViewModel = function() {
 
   this.locList = ko.observableArray([]);
   this.prompt = ko.observable("Type Location Here");
-  this.toggleListView = ko.observable(true);
+  this.toggleListView = ko.observable(false);
   this.showFilterError = ko.observable(false);
   this.searchInputValue = ko.observable("");
+  this.listViewClasses = ko.observable("col-sm-3 hidden-xs");
 
   // buildList: Build the locList from the initialLocations array.
   // This is how the initial list is displayed,
@@ -158,6 +159,11 @@ var ViewModel = function() {
 
   this.toggleListPanel = function() {
     this.toggleListView(!this.toggleListView());
+    if (this.toggleListView()) {
+      this.listViewClasses("col-sm-3");
+    } else {
+      this.listViewClasses("col-sm-3 hidden-xs");
+    }
   };
 
   // bounceMarker: Clicking on list item makes associated marker in map bounce.

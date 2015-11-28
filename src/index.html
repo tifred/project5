@@ -29,8 +29,12 @@
       </div>
       <div class="col-xs-2 col-xs-offset-6">
 
-        <!-- A click runs toggleListPanel which changes
-             toggleListView which hides/shows list view -->
+        <!-- The menu icon has a media query to make
+             it only appear above 768px in width.
+             A click runs toggleListPanel which changes
+             toggleListView from true to false or vice versa, 
+             which adds or removes the "visible" classes to the element.
+             In other words, a click hides the list panel or shows it. -->
 
         <button class="menu-icon" data-bind="click: toggleListPanel">
           <span class="glyphicon glyphicon-align-justify"></span>
@@ -46,9 +50,18 @@
       <!-- LIST VIEW PANEL -->
 
       <!-- Hide entire list view when button of
-           class "menu-icon" (above) is clicked -->
+           class "menu-icon" (above) is clicked.
+           Accomplished by adding/removing the "hidden-xs" class.
 
-      <div class="col-sm-3" data-bind="visible: toggleListView">
+           The class "col-sm-3" will be applied at all times.
+
+           Note that the other column in this row is the map, which 
+           uses col-sm-9.  Therefore, above 768 px, the two elements
+           are side by side, using up 25% and 75% of the screen.
+           Below 768px, the map will be underneath the list panel, 
+           assuming it has been toggled to be visible. -->
+
+      <div data-bind="attr: { class: listViewClasses}">
 
         <!-- FILTER FORM -->
 
