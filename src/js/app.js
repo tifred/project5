@@ -9,32 +9,62 @@ var initialLocations = [
   {
      name: "Brooklyn",
      state: "NY",
-     visible: true
+     visible: true,
+     park: false
   },
   {
      name: "Queens",
      state: "NY",
-     visible: true
+     visible: true,
+     park: false
   },
   {
      name: "Harlem",
      state: "NY",
-     visible: true
+     visible: true,
+     park: false
   },
   {
      name: "Hell's Kitchen",
      state: "NY",
-     visible: true
+     visible: true,
+     park: false
   },
   {
      name: "Washington Heights",
      state: "NY",
-     visible: true
+     visible: true,
+     park: false
   },
   {
      name: "Soho",
      state: "NY",
-     visible: true
+     visible: true,
+     park: false
+  },
+  {
+     name: "Washington Square Park",
+     state: "NY",
+     visible: true,
+     park: true
+  },
+  {
+     name: "Central Park",
+     state: "NY",
+     visible: true,
+     park: true
+  },
+  {
+     name: "Astoria Park",
+     state: "NY",
+     visible: true,
+     park: true
+  },
+  {
+     name: "Madison Square Park",
+     state: "NY",
+     visible: true,
+     park: true
   }
 ];
 
@@ -47,6 +77,7 @@ var Location = function(data) {
   this.name = ko.observable(data.name);
   this.state = ko.observable(data.state);
   this.visible = ko.observable(data.visible);
+  this.park = ko.observable(data.park);
 };
 
 var ViewModel = function() {

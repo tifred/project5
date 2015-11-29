@@ -158,7 +158,8 @@ function initializeMap(locations, bounce) {
      Finally, call createMapMarker with results array and nytInfo string.
   */
 
-  function callback(results, status) {
+  function callback(results, status, foo) {
+    console.log(foo);
     if (status == google.maps.places.PlacesServiceStatus.OK) {
       var name = results[0].formatted_address.split(",")[0];
       var nytQuery = 'http://api.nytimes.com/svc/search/v2/articlesearch.json?q=' + name + '&sort=newest&api-key=8d6910d8cc45e32cb31931220a4d3c4b:5:73416722';
@@ -194,6 +195,7 @@ function initializeMap(locations, bounce) {
     */
 
     for (var i = 0; i < locations.length; i++) {
+      var foo = "bar";
       // The search request object:
       var request = {
         query: locations[i]
@@ -202,7 +204,8 @@ function initializeMap(locations, bounce) {
 	 Go get results for the given query from Google.
 	 When the results arrive, run the callback function.
       */
-      service.textSearch(request, callback);
+      // service.textSearch(request, callback);
+      service.textSearch(request, function(results, status) { callback(results, status, foo)});
     }
   }
 
