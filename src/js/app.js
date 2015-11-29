@@ -114,8 +114,8 @@ var ViewModel = function() {
      buildMap: Build the map.
      The mapLocations array contains all visible locations.
      Calls initializeMap, which is defined in the google.Map.js file.
-     "false" parameter means DO NOT bounce the marker for each location.
-     "true" parameter means DO bounce the marker for each location.
+       "false" parameter means DO NOT bounce the marker for each location.
+       "true" parameter means DO bounce the marker for each location.
      (Note: this is unrelated to setting up event handlers to bounce markers.
      That happens in the google.Map.js file.)
      Only run after whole window is loaded, or errors may occur.
@@ -125,8 +125,14 @@ var ViewModel = function() {
     var mapLocations = [];
     self.locList().forEach(function(loc) {
       if (loc.visible()) {
-        mapLocations.push('' + loc.name() + ', ' + loc.state() + '');
-      }
+      //  mapLocations.push('' + loc.name() + ', ' + loc.state() + '');
+        mapLocations.push(
+          {
+           location: '' + loc.name() + ', ' + loc.state() + '',
+           park: loc.park()
+          }
+        );
+      } 
     });
     window.addEventListener('load', initializeMap(mapLocations, false));
   };
@@ -241,7 +247,13 @@ var ViewModel = function() {
 
   this.bounceMarker = function(loc) {
     var bounceLocation = [];
-    bounceLocation.push('' + loc.name() + ', ' + loc.state() + '');
+    // bounceLocation.push('' + loc.name() + ', ' + loc.state() + '');
+    bounceLocation.push(
+      {
+       location: '' + loc.name() + ', ' + loc.state() + '',
+       park: loc.park()
+      }
+    );
     window.addEventListener('load', initializeMap(bounceLocation, true));
   };
 };

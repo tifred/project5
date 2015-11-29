@@ -44,7 +44,7 @@ function initializeMap(locations, bounce) {
 
   // Build map marker and info window per location.
 
-  function createMapMarker(placeData, nytInfo) {
+  function createMapMarker(placeData, infoLinks, isPark) {
 
     var lat = placeData.geometry.location.lat();  // latitude from the place service
     var lon = placeData.geometry.location.lng();  // longitude from the place service
@@ -52,14 +52,24 @@ function initializeMap(locations, bounce) {
     var bounds = window.mapBounds;                // current boundaries of the map window
 
     // marker is an object with additional data about the pin for a single location.
-    var marker = new google.maps.Marker({
-      map: map,
-      position: placeData.geometry.location,
-      title: name
-    });
+    if (isPark) {
+      var marker = new google.maps.Marker({
+	map: map,
+	position: placeData.geometry.location,
+	title: name,
+	icon: 'img/darkgreen_MarkerP.png'
+      });
+    } else {
+      var marker = new google.maps.Marker({
+	map: map,
+	position: placeData.geometry.location,
+	title: name,
+      });
+    }
+
 
     var infoWindow = new google.maps.InfoWindow({
-      content: nytInfo
+      content: infoLinks
     });
 
     /*
@@ -147,7 +157,7 @@ function initializeMap(locations, bounce) {
      Change "OK" to "XXOK" and it will fail.
 
      If results do come back, call New York Times data API.
-     Build string "nytinfo" of "li"s with the first three most recent articles about location.
+     Build string "infoLinks" of "li"s with the first three most recent articles about location.
      Uses an AJAX call with a done and fail method.
      It's important to acquire this info before running createMapMarker.
      That function must have all the info from the NYT API, or it will have no info to display.
@@ -155,30 +165,57 @@ function initializeMap(locations, bounce) {
      If results don't come back from NYT, display error in infoWindow.
      You can test this by changing "api.nytimes" to "apiXX.nytimes".
 
-     Finally, call createMapMarker with results array and nytInfo string.
+     Finally, call createMapMarker with results array and infoLinks string.
   */
 
-  function callback(results, status, foo) {
-    console.log(foo);
+  function callback(results, status, isPark) {
     if (status == google.maps.places.PlacesServiceStatus.OK) {
-      var name = results[0].formatted_address.split(",")[0];
+      var name = results[0].name;
+
+      if (isPark) {
+	var wikiRequestTimeout = setTimeout(function() {
+	  var failText = "<p>failed to get wikipedia resources.  Sorry.</p>";
+	  var infoLinks = failText;
+	  createMapMarker(results[0], infoLinks, true);
+	}, 8000);
+
+	$.ajax({
+	  url: 'https://en.wikipedia.org/w/api.php?action=opensearch&search=' + name + '&format=json',
+	  dataType: "jsonp",
+	  success: function (response) {
+	    // console.log("from wikipedia: " + response)
+	    var wikiURL = response[3];
+	    var wikiStr = response[1];
+	    var items = [];
+	    items.push("<ul>");
+	    for (var i = 0; i < wikiURL.length; i++) {
+	       items.push( "<li class='article'> <a href='" + wikiURL[i] + "' target='_blank'> " + wikiStr[i] + "</a></li>");
+	    }
+	    items.push("</ul>");
+	    var infoLinks = items.join("");
+	    createMapMarker(results[0], infoLinks, true);
+	    clearTimeout(wikiRequestTimeout);
+	  }
+      });
+    } else {
       var nytQuery = 'http://api.nytimes.com/svc/search/v2/articlesearch.json?q=' + name + '&sort=newest&api-key=8d6910d8cc45e32cb31931220a4d3c4b:5:73416722';
-      $.getJSON(nytQuery)
-         .done(function(data) {
-           var items = [];
-           items.push("<ul>");
-           for (var i = 0; i < 3; i++ ) {
-             items.push( "<li class='article'> <a href='" + data.response.docs[i].web_url + "' target='_blank'> " + data.response.docs[i].headline.main + "</a> <p>" + data.response.docs[i].snippet + "</p> </li>");
-           }
-           items.push("</ul>");
-           var nytInfo = items.join("");
-           createMapMarker(results[0], nytInfo);
-         })
-         .fail(function() {
-           var failText = "<p>Failed to Load the NYT articles.  Sorry.</p>";
-           var nytInfo = failText;
-           createMapMarker(results[0], nytInfo);
-         });
+	$.getJSON(nytQuery)
+	   .done(function(data) {
+	     var items = [];
+	     items.push("<ul>");
+	     for (var i = 0; i < 3; i++ ) {
+	       items.push( "<li class='article'> <a href='" + data.response.docs[i].web_url + "' target='_blank'> " + data.response.docs[i].headline.main + "</a> <p>" + data.response.docs[i].snippet + "</p> </li>");
+	     }
+	     items.push("</ul>");
+	     var infoLinks = items.join("");
+	     createMapMarker(results[0], infoLinks, false);
+	   })
+	   .fail(function() {
+	     var failText = "<p>Failed to Load the NYT articles.  Sorry.</p>";
+	     var infoLinks = failText;
+	     createMapMarker(results[0], infoLinks, false);
+           });
+      }
     } else {
       $('#map').append('<h3>No results from Google Maps API.  Consider yourself lost.</h3>');
     }
@@ -195,17 +232,25 @@ function initializeMap(locations, bounce) {
     */
 
     for (var i = 0; i < locations.length; i++) {
-      var foo = "bar";
       // The search request object:
       var request = {
-        query: locations[i]
+        query: locations[i].location
       };
+      var isPark = locations[i].park;
+      // console.log("The " + i + "th run through: " + isPark);
       /*
 	 Go get results for the given query from Google.
 	 When the results arrive, run the callback function.
       */
-      // service.textSearch(request, callback);
-      service.textSearch(request, function(results, status) { callback(results, status, foo)});
+      // ORIG service.textSearch(request, callback);
+      // EDIT service.textSearch(request, function(results, status) { callback(results, status, isPark)});
+      if (isPark) {
+        service.textSearch(request, function(results, status) { callback(results, status, true)});
+      } else {
+        service.textSearch(request, function(results, status) { callback(results, status, false)});
+      }
+      
+ 
     }
   }
 
