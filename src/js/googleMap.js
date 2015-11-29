@@ -15,9 +15,11 @@ The rough order in which things happen:
 var map;                      // declares a global map variable
 var currentMarker = null;     // used to ensure only one marker bounces at a time.
 var currentInfoWindow = null; // used to ensure only one infoWindow is open at once.
+var oneMarkerOnly = false;    // used to keep zoom level at 15 when window resized on one marker.
 
 /*
    initializeMap: the main function.
+
    Run from ViewModel in the "app.js" file.
    "locations" is an array with elements like: "Brooklyn, NY"
    "bounce" is a boolean:
@@ -37,6 +39,10 @@ function initializeMap(locations, bounce) {
   // Determine number of locations to display.
   var markerCount = locations.length;
 
+  // Set the global variable to true/false, depending on number of locations.
+  // One location is used when filtering to one item or when bouncing upon a click.
+  (markerCount === 1) ? oneMarkerOnly = true : oneMarkerOnly = false ;
+
   // build instance of map from Google's constructor.
   // the final map image will be part of the "#map" element in the HTML.
 
@@ -51,7 +57,8 @@ function initializeMap(locations, bounce) {
     var name = placeData.formatted_address;       // name of the place from the place service
     var bounds = window.mapBounds;                // current boundaries of the map window
 
-    // marker is an object with additional data about the pin for a single location.
+    // If it is a park, use the dark green icon instead of standard red one.
+
     if (isPark) {
       var marker = new google.maps.Marker({
 	map: map,
@@ -66,7 +73,6 @@ function initializeMap(locations, bounce) {
 	title: name,
       });
     }
-
 
     var infoWindow = new google.maps.InfoWindow({
       content: infoLinks
@@ -84,7 +90,7 @@ function initializeMap(locations, bounce) {
       marker.setAnimation(google.maps.Animation.BOUNCE);
       setTimeout(function() {
         marker.setAnimation(null);
-      }, 3000);
+      }, 2000);
     }
 
     /*
@@ -129,10 +135,10 @@ function initializeMap(locations, bounce) {
     /*
        If there is more than one marker, use the default zooming.
        If there is just one marker, which happens when clicking
-       on the list of locations or filtering on them, 
-       set zoom to 15.
+       on the list of locations or filtering on them, set zoom to 15.
     */
 
+/*
     if (markerCount > 1) {
       // Fit the map to the new marker
       map.fitBounds(bounds);
@@ -140,41 +146,62 @@ function initializeMap(locations, bounce) {
       map.setCenter(bounds.getCenter());
     }
     else if (markerCount === 1) {
+      map.fitBounds(bounds);
       // Center the map and set zoom level.
       map.setCenter(bounds.getCenter());
       map.setZoom(15);
     }
+*/
+
+    // Fit the map to the new marker
+    map.fitBounds(bounds);
+    // Center the map
+    map.setCenter(bounds.getCenter());
+    if (markerCount === 1) {
+      map.setZoom(15);
+    }
+    
+
+
+
   }
 
   /*
      callback: run by service.textSearch when it gets results back.
      This handles data from both Google's Map API and the NYT's API.
-     There is error handling for both.
+     and WikiPedia's API.
+     There is error handling for all three.
 
-     Use "status" to be sure results were received from Google's Map API.
+     Use "status" parameter to be sure results were received from Google's Map API.
      If results don't come back, return error message to #map element.
      You can test this by mangling "google.maps.places.PlacesServiceStatus.OK" below.
      Change "OK" to "XXOK" and it will fail.
 
-     If results do come back, call New York Times data API.
+     If results come back from Google, test to see if the marker is a park.
+     If it is, run the API for wikipedia, using the jquery ajax method.
+
+     If it is not a park, call New York Times data API.
      Build string "infoLinks" of "li"s with the first three most recent articles about location.
      Uses an AJAX call with a done and fail method.
-     It's important to acquire this info before running createMapMarker.
-     That function must have all the info from the NYT API, or it will have no info to display.
 
-     If results don't come back from NYT, display error in infoWindow.
+     It's important to acquire this info before running createMapMarker.
+     Otherwise, it will have no info to display.
+
+     If results don't come back from NYT or Wikipedia, display error in infoWindow.
      You can test this by changing "api.nytimes" to "apiXX.nytimes".
 
-     Finally, call createMapMarker with results array and infoLinks string.
+     Finally, call createMapMarker with results array and infoLinks string, 
+     and a true/false to say whether the marker is a park or not.
   */
 
   function callback(results, status, isPark) {
     if (status == google.maps.places.PlacesServiceStatus.OK) {
+      // The "name" property is the raw name; it is the best thing to hand to the APIs.
       var name = results[0].name;
 
       if (isPark) {
 	var wikiRequestTimeout = setTimeout(function() {
-	  var failText = "<p>failed to get wikipedia resources.  Sorry.</p>";
+	  var failText = "<p>Failed to get wikipedia resources.  Sorry.</p>";
 	  var infoLinks = failText;
 	  createMapMarker(results[0], infoLinks, true);
 	}, 8000);
@@ -183,7 +210,6 @@ function initializeMap(locations, bounce) {
 	  url: 'https://en.wikipedia.org/w/api.php?action=opensearch&search=' + name + '&format=json',
 	  dataType: "jsonp",
 	  success: function (response) {
-	    // console.log("from wikipedia: " + response)
 	    var wikiURL = response[3];
 	    var wikiStr = response[1];
 	    var items = [];
@@ -217,7 +243,14 @@ function initializeMap(locations, bounce) {
            });
       }
     } else {
-      $('#map').append('<h3>No results from Google Maps API.  Consider yourself lost.</h3>');
+        /* 
+          Four second delay before showing error.  This isn't perfect, but it helps.
+          Without it, the error shows a lot, even though good results are on the way.
+          Especially noticeable on mobile.
+        */
+	setTimeout(function() {
+	  $('#map').append('<h3>No results from Google Maps API.</h3>');
+	}, 4000);
     }
   }
 
@@ -237,13 +270,19 @@ function initializeMap(locations, bounce) {
         query: locations[i].location
       };
       var isPark = locations[i].park;
-      // console.log("The " + i + "th run through: " + isPark);
+
       /*
 	 Go get results for the given query from Google.
 	 When the results arrive, run the callback function.
+         
+         Note: I ran into trouble passing along the "isPark" variable.
+         Don't know why, but resorted to using the "if" below to directly 
+         pass along a true or false.
+
+         Note: I had to use the format below to pass a new argument to the callback
+         run by textSearch.  Otherwise, it wouldn't take the last boolean argument.
       */
-      // ORIG service.textSearch(request, callback);
-      // EDIT service.textSearch(request, function(results, status) { callback(results, status, isPark)});
+
       if (isPark) {
         service.textSearch(request, function(results, status) { callback(results, status, true)});
       } else {
@@ -254,14 +293,23 @@ function initializeMap(locations, bounce) {
     }
   }
 
-  // Sets the boundaries of the map based on pin locations
+  // ? this comment doesn't make sense to me: Sets the boundaries of the map based on pin locations
   window.mapBounds = new google.maps.LatLngBounds();
 
   // pinPoster(locations) creates pins on the map for each location.
   pinPoster(locations);
 }
 
-// Vanilla JS way to listen for resizing of the window and adjust map bounds
+/* 
+Vanilla JS way to listen for resizing of the window and adjust map bounds
+If there is only one marker viewed right now, put zoom at 15.
+Otherwise, the zoom will be way too zoomed.
+*/
+
 window.addEventListener('resize', function(e) {
   map.fitBounds(mapBounds);
+  map.setCenter(mapBounds.getCenter());
+  if (oneMarkerOnly) {
+    map.setZoom(15);
+  }
 });

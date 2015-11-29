@@ -1,8 +1,7 @@
 /* 
    The initial locations.
-   Using an object for each array element
-   allows room to easily add more criteria in the future..
-   e.g. "restaurant", "street", "address", "phone".
+   Using an object for each array element.
+   Some are neighborhoods, some are parks.
 */
 
 var initialLocations = [
@@ -111,21 +110,27 @@ var ViewModel = function() {
   this.buildList();  // build it now.
 
   /*
-     buildMap: Build the map.
+     buildMap: Build the map from the list 
+     of locations currently marked visible.
+
      The mapLocations array contains all visible locations.
-     Calls initializeMap, which is defined in the google.Map.js file.
+     Each element is an object that contains, for example:
+       location: Brooklyn, NY,
+       park: false
+
+     buildMap calls initializeMap, which is defined in the google.Map.js file.
        "false" parameter means DO NOT bounce the marker for each location.
        "true" parameter means DO bounce the marker for each location.
      (Note: this is unrelated to setting up event handlers to bounce markers.
      That happens in the google.Map.js file.)
-     Only run after whole window is loaded, or errors may occur.
+
+     Only run initializeMap after whole window is loaded, or errors may occur.
   */
 
   this.buildMap = function() {
     var mapLocations = [];
     self.locList().forEach(function(loc) {
       if (loc.visible()) {
-      //  mapLocations.push('' + loc.name() + ', ' + loc.state() + '');
         mapLocations.push(
           {
            location: '' + loc.name() + ', ' + loc.state() + '',
@@ -241,7 +246,9 @@ var ViewModel = function() {
   /*
     bounceMarker: Clicking on list item makes associated marker in map bounce.
     Only applies to the single, clicked-upon item.
-    The "true" parameter means initializeMap will do the right thing
+    The bounceLocation is akin to the mapLocation array in buildMap.
+
+    The "true" parameter means initializeMap will bounce the marker
     for just this one location.  All other locations are left alone.
   */
 
@@ -262,5 +269,6 @@ var ViewModel = function() {
   in the "googleCallback.js" file.
   Don't want to build model until we know google maps could be reached.
   Keeping it here as a comment just for comprehension's sake.
+
   ko.applyBindings(new ViewModel());
 */

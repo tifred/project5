@@ -18,10 +18,12 @@ li {
   margin-top: 5px;
 }
 
+#filter-input-prompt, 
 #filter-input-submit,
 #clear-filter-input-submit {
   background-color: #B6E2ED;
 }
+
 
 #clear-filter-input-submit {
   margin-bottom: 5px;
@@ -68,6 +70,20 @@ li:hover {
     padding-right: 5%;
     background-color: #9D94B4;
   }
+
+  #filter-input-prompt {
+    width: 100%;
+  }
+}
+
+@media only screen AND (max-width: 768px) AND (orientation: landscape) {
+  #mapDiv {
+    height: 450px;
+  }
+
+  #div-list {
+    height: 331px;
+  }
 }
 
 /* Don't show menu icon above 768px */
@@ -84,6 +100,7 @@ li:hover {
     float: left;
     width: 75%;
   }
+
 }
 
 /* finicky adjustment to match size of map div */
