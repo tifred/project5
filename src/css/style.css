@@ -18,12 +18,11 @@ li {
   margin-top: 5px;
 }
 
-#filter-input-prompt, 
+#filter-input-prompt,
 #filter-input-submit,
 #clear-filter-input-submit {
   background-color: #B6E2ED;
 }
-
 
 #clear-filter-input-submit {
   margin-bottom: 5px;
@@ -100,7 +99,6 @@ li:hover {
     float: left;
     width: 75%;
   }
-
 }
 
 /* finicky adjustment to match size of map div */

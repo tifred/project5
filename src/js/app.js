@@ -1,4 +1,4 @@
-/* 
+/*
    The initial locations.
    Using an object for each array element.
    Some are neighborhoods, some are parks.
@@ -24,7 +24,7 @@ var initialLocations = [
      park: false
   },
   {
-     name: "Hell's Kitchen",
+     name: "Lower East Side",
      state: "NY",
      visible: true,
      park: false
@@ -67,7 +67,7 @@ var initialLocations = [
   }
 ];
 
-/* 
+/*
    Location: Constructor that will be used for each location.
    All properties are observables.
 */
@@ -82,7 +82,7 @@ var Location = function(data) {
 var ViewModel = function() {
   var self = this;
 
-  /* 
+  /*
      locList is the main observable Array.
      It will hold all the objects built with the
      "Location" constructor.
@@ -96,7 +96,7 @@ var ViewModel = function() {
   this.listViewClasses = ko.observable("col-xs-3");
   this.mapViewClasses = ko.observable("col-xs-9");
 
-  /* 
+  /*
      buildList: Build the locList from the initialLocations array.
      This is how the initial list is displayed,
      in which all locations are visible.
@@ -110,7 +110,7 @@ var ViewModel = function() {
   this.buildList();  // build it now.
 
   /*
-     buildMap: Build the map from the list 
+     buildMap: Build the map from the list
      of locations currently marked visible.
 
      The mapLocations array contains all visible locations.
@@ -137,7 +137,7 @@ var ViewModel = function() {
            park: loc.park()
           }
         );
-      } 
+      }
     });
     window.addEventListener('load', initializeMap(mapLocations, false));
   };
@@ -170,11 +170,11 @@ var ViewModel = function() {
   /*
     updateAfterFilter: helper method used by both filter methods.
     The test method will return true if a match is found given the "place".
-    based on that test,  the visible status of each location is 
-    set to true or false.  The list view will update automatically because of a 
+    based on that test,  the visible status of each location is
+    set to true or false.  The list view will update automatically because of a
     foreach data-bind to the ul tag.
 
-    Another test is done to decide whether to show an error 
+    Another test is done to decide whether to show an error
     when no matches are found.
     Finally, the map is rebuilt.
   */
